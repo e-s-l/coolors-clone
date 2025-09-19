@@ -44,5 +44,5 @@ title="example sample" />
 spelling *e.g.* `grey` or `gray`, plus the corresponding shades may bring it
 down to 140, i haven't checked.
 
-<a name="fn3"></a>: https://www.w3schools.com/colors/colors_names.asp
+<a name="fn3">3</a>: https://www.w3schools.com/colors/colors_names.asp
 
