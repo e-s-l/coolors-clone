@@ -1,0 +1,112 @@
+#! /usr/bin/env perl
+
+use strict;
+use warnings;
+
+#
+# this script extracts the well-defined (named and trans-browesr compatible)
+# colours (names and hex codes) and saves to file as json
+#
+# an example of the html block we need to filter:
+# ```
+#  <div class="w3-col l4 m6 w3-center colorbox">
+#    <div class="innerbox" id="box130" onmouseover="color_mouseover(this, 130)" onmouseout="color_mouseout(this, 130)">
+#      <span class="colornamespan"><a target="_blank" href="/colors/color_tryit.asp?color=Silver">Silver</a></span><br>
+#      <div><span class="colorhexspan"><a target="_blank" href="/colors/color_tryit.asp?hex=C0C0C0">#C0C0C0</a></span></div>
+#       <div class="w3-row colorlinkcontainer" id="colorlinkcontainer130">
+#           <div style="float:left;width:50%"><div class="linktocolormixerdiv" id="linktomixer130"><a href="/colors/colors_mixer.asp?colorbottom=C0C0C0&colortop=FFFFFF">Color Mixer</a></div></div>
+#           <div style="float:left;width:50%"><div class="linktocolorpickerdiv" id="linktopicker130"><a href="/colors/colors_picker.asp?colorhex=C0C0C0">Color Picker</a></div></div>
+#      </div>
+#    </div>
+#  </div>
+# ```
+#
+
+use HTML::Parser;               # process the html file
+use LWP::Simple;                # Library for Www Perl
+use JSON::PP;                   # pretty print json
+
+my $url = "https://www.w3schools.com/colors/colors_names.asp"; 
+
+my %colours;
+my ($in_name, $in_hex) = (0, 0);
+my ($current_name, $current_hex);
+
+#
+# parser defines handlers using
+# subs passed args list
+#
+# primary handlers and args:
+#   start_h: any start tags
+#       tagname and atrributes
+#   text_h: text hander
+#       decoded text,
+#   end_h: any ending tags
+#       tagname.
+#
+
+my $parser = HTML::Parser->new(
+    api_version => 3,
+        start_h => [
+        sub {
+            my ($tag, $attr) = @_;
+            if ($tag eq 'span' && $attr->{class} && $attr->{class} eq 'colornamespan') {
+                $in_name = 1;
+            }
+            elsif ($tag eq 'span' && $attr->{class} && $attr->{class} eq 'colorhexspan') {
+                $in_hex = 1;
+            }
+        }, "tagname, attr"
+    ],
+    text_h => [
+        sub {
+            my ($text) = @_;
+            if ($in_name) {
+                $text =~ s/^\s+|\s+$//g;
+                $current_name = $text;
+            }
+            elsif ($in_hex) {
+                $text =~ s/^\s+|\s+$//g;
+                $current_hex = $text;
+            }
+        }, "dtext"
+    ],
+    end_h => [
+        sub {
+            my ($tag) = @_;
+            if ($tag eq 'span' && $in_name) {
+                $in_name = 0;
+            }
+            elsif ($tag eq 'span' && $in_hex) {
+                $in_hex = 0;
+                if (defined $current_name && defined $current_hex) {
+                    $colours{$current_name} = $current_hex;
+                    $current_name = undef;
+                    $current_hex  = undef;
+                }
+            }
+        }, "tagname"
+    ],
+);
+
+# basically curl the site
+my $html = get($url) or die("failed to access sort website");
+
+# process the html per the above
+$parser->parse($html);
+
+# sort the hash into an array
+my @colours_sorted_name = map { { name => $_, hex => $colours{$_} } }
+                          sort
+                          keys %colours;
+
+### TODO: implement a sort by hex...
+
+# convert to json
+my $json = JSON::PP->new->pretty->canonical;
+my $sorted_colours = $json->encode(\@colours_sorted_name);
+
+# write out to file
+open my $fh, ">", "html_colours.json" or die "cannot write to file: $!";
+print $fh $sorted_colours;
+close $fh;

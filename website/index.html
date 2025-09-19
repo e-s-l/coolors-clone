@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dumb coolours 148</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>dumb coolours 148</h1>
+    </header>
+    <main>
+        <section class="control-panel">
+            <fieldset>
+                <legend>controls</legend>
+                <button class="icon-btn" id="regenerate" title="or press spacebar!">
+                    <span class="material-symbols-outlined">
+                        replay
+                    </span>
+                </button>
+                <div>
+                    <label for="box-count">colour count:</label>
+                    <input type="number" id="box-count" value="5" min="2" max="8">
+                </div>
+                <div>
+                    <label for="format-select">format: </label>
+                    <select id="format-select">
+                        <option value="hex" selected>hex</option>
+                        <option value="rgb">rgb</option>
+                    </select>
+                </div>
+                <button id="get-css-btn" title="copy to clipboard">
+                    get css
+                </button>
+                <button class="icon-btn" id="info" title="would you like to know more?"
+                    aria-describedby="info-popup"><span class="material-symbols-outlined">
+                        info
+                    </span></button>
+            </fieldset>
+        </section>
+        <aside class="popup no-show" id="info-popup">
+
+            <header>
+                <h2>about</h2>
+                <button class="icon-btn close-btn"><span class="material-symbols-outlined">
+                        close
+                    </span></button>
+            </header>
+            <div class="info-text">
+                <p>press spacebar to random shuffle the named colours.</p>
+                <p>
+                    kind of like <a href="https://coolors.co/" target="_blank">coolors.com</a> (sic) but worse.
+                </p>
+                <p>
+                    only the colours found <a href="https://www.w3schools.com/colors/colors_names.asp"
+                        target="_blank">here</a>.
+                </p>
+                <p>
+                    limited functionality on mobile.
+                </p>
+            </div>
+
+        </aside>
+        <!-- <section class="palette">
+            <div class="output-container" id="output-container"></div>
+        </section> -->
+        <section class="output-container" id="output-container"></section>
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>
