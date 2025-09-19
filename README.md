@@ -35,6 +35,7 @@ title="example sample" />
 
 - host it
 - docstrings \& comments
+- validate accessibility, run lighthouse...
 
 ## references \& notes
 
